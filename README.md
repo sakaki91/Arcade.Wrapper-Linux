@@ -1,8 +1,11 @@
 # Teknoparrot.Core-Linux
-This project uses Teknoparrot completely adapted for the Linux kernel, using the Wine utilities!  
+This project uses Teknoparrot completely adapted for the Linux kernel, using the Wine utilities!
 
 This project is 100% free and open source, and aims to help preserve arcade game emulation in a way that is compatible with the Linux kernel, attempting to decouple it as much as possible from the Windows NT kernel.<br>    
 This project does NOT provide the download/use of illegal dumps (use your own dumps legally!), and it also does NOT use proprietary code from those responsible for the games or the creators of [Teknoparrot](https://teknoparrot.com/en/).  
+
+#### If you would like to support the development of the project:
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/sakaki91)  
 
 Primary dependencies: `git, bash, wget, wine, winetricks`
 
