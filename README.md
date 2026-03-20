@@ -11,7 +11,7 @@ __Be patient if something doesn't work (this is quite common), I'm doing this on
 ### Getting Started: 
 - [[ Setup ]](#setup)
 - [[ Auto-install ]](#auto-install)
-- [[ Currently supported games ]](currently-supported-games.md)
+- [[ Currently supported games ]](github.com/sakaki91/Teknoparrot.Core-Linux/wiki/Currently-supported-games)
 - [[ About the Project ]](#about-the-project)
 
 ## Setup:
