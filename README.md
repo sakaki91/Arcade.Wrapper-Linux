@@ -11,8 +11,8 @@ __Be patient if something doesn't work (this is quite common), I'm doing this on
 ### Getting Started: 
 - [[ Setup ]](#setup)
 - [[ Auto-install ]](#auto-install)
+- [[ Wiki ]](https://github.com/sakaki91/Teknoparrot.Core-Linux/wiki)
 - [[ Currently supported games ]](https://www.github.com/sakaki91/Teknoparrot.Core-Linux/wiki/Currently-supported-games)
-- [[ About the Project ]](#about-the-project)
 
 ## Setup:
 
@@ -71,9 +71,3 @@ Script dependencies: `git, bash, unzip, make (umu-run needs to be compiled local
     $ cd Teknoparrot.Core-Linux/
     $ chmod +x install.sh
     $ ./install.sh
- 
-## About the Project:
-
-#### __What is the GPL license and why does the project have it?__  
-It is present in the project precisely to protect the wrapper from any "destructive" intentions on the part of private companies, it is there to protect the code from being transformed into a "closed box" or something similar to a paywall, as we have seen happen with some projects in the past.  
-The culture must be FREE and ACCESSIBLE to everyone, regardless of their financial condition or level of support, with security, transparency and, above all, respect for both the user's machine and the person behind the screen.
