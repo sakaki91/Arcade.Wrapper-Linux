@@ -28,7 +28,6 @@ creationTree(){
 }
 
 variableTree(){
-    sed -i "s|^\s*TP_PROJECT_LOCATION=.*|TP_PROJECT_LOCATION=\"$TREE\"|" Arcade.Runtime
     EXEC_SHORTCUT="$HOME/.local/share/applications/com.sakaki.Teknoparrot.desktop"
     PROGRAM=${TREE}/PROGRAM
     PREFIX=${TREE}/PREFIX
@@ -121,7 +120,7 @@ executableCreation(){
 
 case $1 in
     "--help")
-        echo -e "\nTeknoparrot-Linux (Runtime): Version 3.1\n\n--help\t\tShow this message.\n--debug \tIt executes the debug executable file (this may take some time and usually generates its own log file).\n--remove\tClears all files created by the script.\n"
+        echo -e "\nTeknoparrot-Linux (Runtime): Version 3.1-1\n\n--help\t\tShow this message.\n--debug \tIt executes the debug executable file (this may take some time and usually generates its own log file).\n--remove\tClears all files created by the script.\n"
         exit
     ;;
     "--debug")
