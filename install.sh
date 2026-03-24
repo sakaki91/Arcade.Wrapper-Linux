@@ -78,7 +78,7 @@ dependencyInstall(){
             [ -f "$PROGRAM"/TeknoParrotUi.exe ] && echo -e " $DONE_LOG Teknoparrot installed!"
             [ ! -f "$PROGRAM"/TeknoParrotUi.exe ] && echo -e " $ERROR_LOG Teknoparrot not installed." && exit
     )
-    ls $TREE && ls $TREE/* &>> $AR_LOG
+    ls $TREE &>> $AR_LOG && ls $TREE/* &>> $AR_LOG
     rm -rf "$PROGRAM"/TPBootstrapper*
     rm -rf "$TMP" && echo -e " $DONE_LOG Temporary files cleared!"
 }
@@ -107,20 +107,19 @@ executableCreation(){
 }
 
 ARL_NAME="Arcade Runtime Linux"
-ARL_VERSION="3.1-3_tmp"
-AR_LOG=$HOME/AR.LOG
+ARL_VERSION="3.1-4"
+AR_LOG="/dev/null"
 DONE_LOG="\e[1;32m* [ DONE ]\033[0m"
 WAIT_LOG="\e[1;33m* [ WAIT ]\033[0m"
 ERROR_LOG="\e[1;31m* [ ERROR ]\033[0m"
 
 case $1 in
     "--help")
-        echo -e "\n$ARL_NAME $ARL_VERSION\n\n--help\t\tShow this message.\n--version\tShow wrapper version.\n--debug \tIt executes the debug executable file (this may take some time and usually generates its own log file).\n--remove\tClears all files created by the script.\n"
+        echo -e "\n$ARL_NAME $ARL_VERSION\n\n--help\t\tShow this message.\n--version\tShow wrapper version.\n--debug \tThis executes the script and generates a log file (AR.LOG) in $HOME.\n--remove\tClears all files created by the script.\n"
         exit
     ;;
     "--debug")
-        echo -e "\nUNDER DEVELOPMENT\n"
-        exit
+        AR_LOG=$HOME/AR.LOG
     ;;
     "--version")
         echo -e "$ARL_NAME $ARL_VERSION"

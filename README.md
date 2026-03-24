@@ -1,33 +1,72 @@
 # Arcade.Runtime-Linux
-
 #### (formerly Teknoparrot.Core-Linux)
+ 
+<p>
 
-This project is 100% free and open source, and aims to help preserve arcade game emulation in a way that is compatible with the Linux kernel, trying to decouple it as much as possible from the Windows NT kernel.  
-We also __DO NOT USE illegal dumps__ (always use your *legal dumps!*), and we __DO NOT USE proprietary code__ from the __[Teknoparrot](https://teknoparrot.com/en/)__ project, And this works like a translator, a __Linux-Wrapper__ that translates an __NT-Wrapper__.
+This project is 100% free and open source, and aims to help preserve arcade game emulation in a way that is compatible with the Linux kernel, trying to decouple it as much as possible from the Windows NT kernel.
 
-This project does NOT cover games that depend on APM3.
+</p>
 
-__Be patient if something doesn't work (this is quite common), I'm doing this on my own, and I'm really trying.__
+<p>
 
-#### If you would like to support the development of the project:
+We also __DO NOT USE illegal dumps (always use your legal dumps!)__ and we __DO NOT USE proprietary code from the [Teknoparrot](https://teknoparrot.com/en/) project, nor from the consoles/arcades__.
+
+</p>
+<p>
+
+In short, what is this project? It is basically a __*wrapper* for Linux__ that translates a __*wrapper* for NT__.
+
+</p>
+
+__This project does NOT cover games that depend on APM3.__
+
+Please be patient if something doesn't work (this is quite common), I'm doing this alone and trying my best.  
+If you would like to support the project's development:  
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/sakaki91)  
 
+Did you encounter problems? *[Read this](https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/1.-About-the-Project#how-does-the-error-report-work).*
+
 ### Getting Started: 
-- [[ Setup ]](#setup)
 - [[ Auto-install ]](#auto-install)
-- [[ Wiki ]](https://github.com/sakaki91/Teknoparrot.Core-Linux/wiki)
-- [[ Currently supported games ]](https://www.github.com/sakaki91/Teknoparrot.Core-Linux/wiki/2.-Currently-supported-games)
+- [[ Manual-install ]](#manual-install)
+	- [[ Wiki ]](https://github.com/sakaki91/Arcade.Runtime-Linux/wiki)
+	- [[ Currently supported games ]](https://www.github.com/sakaki91/Arcade.Runtime-Linux/wiki/2.-Currently-supported-games)
 
-## Setup:
+## Auto Install:
 
-### WARNING!  
- In several games (especially those that use Lua, such as some WMMTs), it is necessary and highly recommended to enable EN_US in locale.gen, because otherwise certain games simply won't work due to localization errors, which can be explained below:
+__Script Dependencies:__  
+*Don't know how to install it on your distribution? [Check this out](https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/4.-Dependencies-and-Distros-Hardware-tested.).*
 
-    $ sudo nano /etc/locale.gen
+`bash`  
+`git`  
+`zenity`  
+`wget`  
+`unzip`  
+`tar`  
+`make` *# umu-run needs to be compiled locally (~/.local/bin/umu-run).*
 
-Check if the en_US.UTF-8 UTF-8 doesn't have a "#" in front of it, if it does, just uncomment it and run:
+Installation:
 
-    $ sudo locale-gen
+    $ cd ~/
+    $ git clone https://github.com/sakaki91/Arcade.Runtime-Linux
+    $ cd Arcade.Runtime-Linux
+    $ git pull
+    $ chmod +x install.sh
+    $ ./install.sh
+
+## Manual Install:
+
+Some games require extra adjustments to the `/etc/locale.gen` file, first, check if `en_US.utf8` is present in your locale file:
+
+	$ locale -a
+
+If the `en_US.UTF-8` is present, simply ignore the steps below that involve locale-gen!
+
+	$ sudo nano /etc/locale.gen
+
+Just remove the "#" from the beginning of `en_US.UTF-8` and save:
+
+	$ sudo locale-gen
 
 After that, you should see something similar to this:
 
@@ -36,20 +75,29 @@ After that, you should see something similar to this:
     en_US.UTF-8... done
     Generation complete.
 
-And now you can proceed with the automatic/manual installation!
+And now you can proceed with the manual installation!
 
 First, we will create a basic folder structure in your user folder:
 
     $ cd ~
     $ mkdir -p Teknoparrot/{PROGRAM,PREFIX,TMP}
     $ cd Teknoparrot/TMP
-    
-The guide uses UMU-Proton 100%, and recently discontinued the priority use of WineGE, so first install (UMU-Proton)[https://github.com/Open-Wine-Components/umu-launcher#installing-as-user] as --user-install!
 
-Let's start preparing the prefix and installing the dependencies:
+The guide uses `umu-run` + `umu-proton` 100%, so first install [UMU-Launcher](https://github.com/Open-Wine-Components/umu-launcher#installing-as-user) as --user-install.  
+and install [UMU-Proton]() in the `Steam Compatibility Tools` ($HOME/.local/share/Steam/compatibilitytools.d) folder.
+
+Let's start by defining the Environment Variables:
 
     $ export WINEPREFIX=$HOME/Teknoparrot/PREFIX
-    $ ~/.local/bin/umu-run wineboot
+	$ export LC_ALL=C
+	$ export LC_NUMERIC=C
+	$ export LANG=en_US.UTF-8
+	$ export GAMEID=0
+	$ export PROTONPATH=$HOME/.local/share/Steam/compatibilitytools.d/UMU-Proton-9.0-4e
+
+Now we will download and install the dependencies in the prefix:
+
+	$ ~/.local/bin/umu-run wineboot -u
     $ wget -c https://aka.ms/dotnet/8.0/dotnet-runtime-win-x64.exe
     $ wget -c https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe
     $ wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip
@@ -64,14 +112,25 @@ Below is an example of how the program would run:
 
 __UMUProton__ (Local Installed):
 
-    $ LC_ALL=C LC_NUMERIC=C LANG=en_US.UTF-8 WINEPREFIX=$HOME/Teknoparrot/PREFIX $HOME/.local/bin/umu-run $HOME/Teknoparrot/PROGRAM/TeknoparrotUi.exe
+    $ LC_ALL=C LC_NUMERIC=C LANG=en_US.UTF-8 WINEPREFIX=$HOME/Teknoparrot/PREFIX GAMEID=0 PROTONPATH=$HOME/.local/share/Steam/compatibilitytools.d/UMU-Proton-9.0-4e $HOME/.local/bin/umu-run $HOME/Teknoparrot/PROGRAM/TeknoParrotUi.exe
 
-## Auto Install:
+Inconvenient, isn't it? You can create a small initializer (which the script even does automatically in the [(Auto-install)](#auto-install) to automate this "bible" of code:
 
-Script dependencies: `git, bash, unzip, make (umu-run needs to be compiled locally.), tar, zenity, wget`
+	$ touch Teknoparrot-Linux
 
-    $ cd ~/
-    $ git clone https://github.com/sakaki91/Teknoparrot.Core-Linux/
-    $ cd Teknoparrot.Core-Linux/
-    $ chmod +x install.sh
-    $ ./install.sh
+Then edit the file with [nano](https://www.nano-editor.org/) and place this information inside the file:
+
+	#!/bin/bash
+	export LC_ALL=C
+	export LC_NUMERIC=C
+	export LANG=en_US.UTF-8
+	export WINEPREFIX=$HOME/Teknoparrot/PREFIX
+	export GAMEID=0
+	export PROTONPATH=$HOME/.local/share/Steam/compatibilitytools.d/UMU-Proton-9.0-4e 
+	$HOME/.local/bin/umu-run $HOME/Teknoparrot/PROGRAM/TeknoParrotUi.exe
+
+And after that:
+
+    $ chmod +x Teknoparrot-Linux
+    $ ./Teknoparrot-Linux
+
