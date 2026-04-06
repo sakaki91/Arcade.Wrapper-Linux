@@ -9,7 +9,7 @@ This project is 100% free and open source, and aims to help preserve arcade game
 
 <p>
 
-We also __DO NOT USE illegal dumps (always use your legal dumps!)__ and we __DO NOT USE proprietary code from the [Teknoparrot](https://teknoparrot.com/en/) project, nor from the consoles/arcades__.
+We also __DO NOT USE illegal dumps (always use your legal dumps!)__ and we __DO NOT USE proprietary code from the [TeknoParrot](https://teknoparrot.com/en/) project, nor from the consoles/arcades__.
 
 </p>
 <p>
@@ -18,7 +18,7 @@ In short, what is this project? It is basically a __*wrapper* for Linux__ that t
 
 </p>
 
-__This project does NOT cover games that depend on APM3.__
+__This project does NOT cover games that depend on *APM3* (for now).__
 
 Please be patient if something doesn't work (this is quite common), I'm doing this alone and trying my best.<br>  
 
@@ -36,7 +36,7 @@ Did you encounter problems? *[Read this](https://github.com/sakaki91/Arcade.Runt
 ## Auto Install:
 
 __Script Dependencies:__  
-*Don't know how to install it on your distribution? [Check this out](https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/4.-Dependencies-and-Distros-Hardware-tested.).*
+*Don't know how to install it on your distribution? [Check this out](https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested.).*
 
 `bash`  
 `git`  
@@ -44,7 +44,7 @@ __Script Dependencies:__
 `wget`  
 `unzip`  
 `tar`  
-`wine` # wine-staging recommended!  
+`wine-staging` [[link]](https://gitlab.winehq.org/wine/wine-staging)  
 `winetricks`  
 
 Installation:
