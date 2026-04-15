@@ -23,7 +23,7 @@ Did you encounter problems? *[Read this](https://github.com/sakaki91/Arcade.Runt
 __Script Dependencies:__  
 *Don't know how to install it on your distribution? [Check this out](https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested.).*
 
-    bash git zenity wget unzip tar wine-staging winetricks
+    bash git zenity wget unzip tar wine-staging
 
 Installation:
 
