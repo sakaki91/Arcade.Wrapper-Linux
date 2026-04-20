@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AWL_NAME="Arcade Wrapper Linux" && AWL_VERSION="3.2-3" && AWL_LOG="/dev/null"
+AWL_NAME="Arcade Wrapper Linux" && AWL_VERSION="3.2-4" && AWL_LOG="/dev/null"
 DEFAULT_COLOR="\033[0m" BOLD_COLOR="\033[1m" && DONE_LOG="\e[1;32mOK\033[0m" && NORMAL_LOG="\e[1;34m*\033[0m" && ERROR_LOG="\e[1;31mERROR\033[0m"
 TREE=${HOME}/TeknoParrot
 DXVK_VERSION="2.7.1"
@@ -65,9 +65,6 @@ dependencyInstall(){
         ls $TREE &>> $AWL_LOG && ls $TREE/* &>> $AWL_LOG
         rm -f "$PROGRAM"/TPBootstrapper*
         rm -r "$TMP" && printf "$NORMAL_LOG Temporary files cleared. $DONE_LOG\n"
-        sleep 1.5
-        pkill -f TPBootstrapper.exe
-        pkill -f TeknoParrotUi.exe
         cp -rT "$PREFIX" "$TREE"/pfx_umu
     else
         printf " $ERROR_LOG\n" && exit
