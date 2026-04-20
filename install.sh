@@ -1,11 +1,8 @@
 #!/bin/bash
 
-AWL_NAME="Arcade Wrapper Linux" && AWL_VERSION="3.2-2" && AWL_LOG="/dev/null"
+AWL_NAME="Arcade Wrapper Linux" && AWL_VERSION="3.2-3" && AWL_LOG="/dev/null"
 DEFAULT_COLOR="\033[0m" BOLD_COLOR="\033[1m" && DONE_LOG="\e[1;32mOK\033[0m" && NORMAL_LOG="\e[1;34m*\033[0m" && ERROR_LOG="\e[1;31mERROR\033[0m"
 TREE=${HOME}/TeknoParrot
-PROGRAM=${TREE}/bin
-PREFIX=${TREE}/pfx
-TMP=${PREFIX}/drive_c/tmp
 DXVK_VERSION="2.7.1"
 
 primaryDependencyChecker(){
@@ -18,6 +15,9 @@ primaryDependencyChecker(){
 }
 
 atomicTree(){
+    PROGRAM=${TREE}/bin
+    PREFIX=${TREE}/pfx
+    TMP=${PREFIX}/drive_c/tmp
     [ -f "$TREE"/awl ] && rm -r "$TREE"/awl
     [ -d "$PROGRAM" ] && rm -r "$PROGRAM"
     [ -d "$PREFIX" ] && rm -r "$PREFIX"
@@ -28,7 +28,7 @@ atomicTree(){
 dependencyInstall(){
     clear
     export WINEPREFIX=${PREFIX}
-    printf "$NORMAL_LOG Wineboot. ($WINEPREFIX)" && wineboot -u &> $AWL_LOG
+    printf "$NORMAL_LOG Wineboot. ($PREFIX)" && wineboot -u &> $AWL_LOG
     if [ -d "$PREFIX"/drive_c ]; then
         printf " $DONE_LOG\n$NORMAL_LOG Downloading dependencies."
         wget -c https://aka.ms/dotnet/8.0/dotnet-runtime-win-x64.exe --directory-prefix="$TMP" &>> $AWL_LOG
