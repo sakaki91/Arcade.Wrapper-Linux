@@ -100,7 +100,7 @@ case $1 in
     ;;
     *)
         printf "$BC%-15s$NC\n" "[system]:"
-        printf "$BC%-15s$NC%-5s\n" "--help" "show this message."
+        printf "$BC%-15s$NC%-5s\n" "awl" "show this message."
         printf "$BC%-15s$NC%-5s\n\n" "--dir" "opens the local awl files."
         printf "$BC%-15s$NC\n" "[wrapper]:"
         printf "$BC%-15s$NC%-5s\n" "--game-list" "Shows the compatibility list."
