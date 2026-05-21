@@ -92,7 +92,6 @@ binaryInstall(){
         rm -rf "$PROGRAM"/TPBootstrapper*
     )
     (
-        rm -rf "$PREFIX"/drive_c/tmp "$PREFIX_UMU"/drive_c/tmp
         cd src/
         chmod +x awl game-list
         cp awl "$TREE"/
@@ -107,10 +106,11 @@ case $1 in
         printf "%-15s%-5s\n" "--help" "show this message."
         printf "%-15s%-5s\n\n" "--version" "show wrapper version."
         printf "\e[1m[installation methods]:\033[0m\n"
-        printf "%-20s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
-        printf "%-20s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
-        printf "%-20s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
-        printf "%-20s%-5s\n" "--binary-only" "installs only the binary files."
+        printf "%-25s%-5s\n" "--update" "updates the awl and game-list binary files."
+        printf "%-25s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
+        printf "%-25s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
+        printf "%-25s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
+        printf "%-25s%-5s\n" "--binary-only" "installs only the binary files."
         exit
     ;;
     "--prefix-only")
@@ -143,13 +143,15 @@ case $1 in
         cleanAtomicTree
         export WINEPREFIX=${PREFIX}
         mkdir -p "$TREE"/{bin,tmp}
-        wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
         binaryInstall
         exit
     ;;
     "--version")
         printf "awl-installer $SCRIPT_VERSION\n"
         exit
+    ;;
+    "--update")
+        cp src/{awl,game-list} "$TREE"/ && exit
     ;;
 esac
 
@@ -160,4 +162,6 @@ downloadGlobalDependencies
 prefixBuildWine
 prefixBuildUMU
 binaryInstall
+
+rm -rf "$PREFIX"/drive_c/tmp "$PREFIX_UMU"/drive_c/tmp
 rm -rf "$TMP"

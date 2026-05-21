@@ -81,6 +81,12 @@ case $1 in
         xdg-open "$HOME/.local/share/awl" &>> /dev/null
         printf "If nothing happens, go to: $BC$HOME/.local/share/awl$NC\n"
     ;;
+    "--remove")
+        rm -rf "$HOME"/.local/share/awl
+        rm -rf "$HOME"/.local/bin/awl
+        flatpak remove org.purei.Play
+        flatpak remove org.DolphinEmu.dolphin-emu
+    ;;
     "--game-list")
         "$HOME"/.local/share/awl/game-list
     ;;
@@ -100,8 +106,8 @@ case $1 in
     ;;
     *)
         printf "$BC%-15s$NC\n" "[system]:"
-        printf "$BC%-15s$NC%-5s\n" "awl" "show this message."
-        printf "$BC%-15s$NC%-5s\n\n" "--dir" "opens the local awl files."
+        printf "$BC%-15s$NC%-5s\n" "--dir" "Opens the local awl files."
+        printf "$BC%-15s$NC%-5s\n\n" "--remove" "Removes all awl files and installations."
         printf "$BC%-15s$NC\n" "[wrapper]:"
         printf "$BC%-15s$NC%-5s\n" "--game-list" "Shows the compatibility list."
         printf "$BC%-15s$NC%-5s\n" "--ns" "Opens the emulator compatible with Namco System [147/246]."
