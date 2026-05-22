@@ -8,16 +8,19 @@ If you would like to support the project's development (This is entirely optiona
 
 Getting Started:
 ----------------
-First, check the compatibility list (https://www.github.com/sakaki91/Arcade.Runtime-Linux/wiki/2.-Currently-supported-games) to confirm that your game is documented.
+First, check the compatibility list to confirm that your game is documented:
+https://www.github.com/sakaki91/Arcade.Runtime-Linux/wiki/2.-Currently-supported-games
 * Currently compatible: 54 games.
 
 I don't support games that require APM3 for obvious reasons (I don't pay for TeknoParrot, and I don't want to).
 
-Did you encounter problems? Read this: https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/1.-About-the-Project#how-does-the-error-report-work.
+Did you encounter problems? Read this:
+https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/1.-About-the-Project#how-does-the-error-report-work.
 
 Installation:
 -------------
-Script Dependencies: (https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested).
+Script Dependencies:
+https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested
 
     $ cd ~/
     $ git clone https://github.com/sakaki91/Arcade.Wrapper-Linux
@@ -31,6 +34,7 @@ What does the script do?
 ------------------------
 Create 2 prefixes (wine, umu).
 Installs the dependencies, which are:
+
 [
     .NET 8 Desktop Runtime & Runtime.
     DirectX (Standalone Installer).
@@ -38,4 +42,5 @@ Installs the dependencies, which are:
     UMU-Proton.
     Wine Mono (for UMU).
 ]
+
 And creates a basic structure in ~/.local/share/awl/ making it possible to call the middleware with: $ awl
