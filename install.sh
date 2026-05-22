@@ -1,11 +1,16 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.3-7"
+SCRIPT_VERSION="3.3-9"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
+
+INSTALLER_DIR=$(pwd)
 TREE=${HOME}/.local/share/awl
-CLEANINSTALL=1
+PROGRAM=${TREE}/bin
+TMP=${TREE}/tmp
+PREFIX=${TREE}/pfx
+PREFIX_UMU=${TREE}/pfx_umu
 
 primaryDependencyChecker(){
     dependencies=(umu-run wine bash wget unzip tar zenity)
@@ -22,25 +27,16 @@ firstLock(){
         printf "\e[1;33mWARNING:\033[0m This will delete everything contained in $TREE\nFor more installation methods, type: '\e[1m./install --help\033[0m'\nWould you like to continue with a clean installation?\n"
         read -p "[Y/n]: " cleanInstallSelection
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
+            rm -rf "$TREE" "$HOME"/.local/bin/awl
+            mkdir -p "$TREE"/{bin,pfx,pfx_umu,tmp}
             break
         elif [[ $cleanInstallSelection == "N" || $cleanInstallSelection == "n" ]]; then
             exit
         else
-            printf "\e[1;31mInvalid option.\033[0m"
+            printf "\e[1;31mERROR:\033[0m Invalid option.\n"
             sleep 1.5
         fi
     done
-}
-
-cleanAtomicTree(){
-    PROGRAM=${TREE}/bin
-    TMP=${TREE}/tmp
-    PREFIX=${TREE}/pfx
-    PREFIX_UMU=${TREE}/pfx_umu
-    if [[ $CLEANINSTALL == 1 ]]; then
-        rm -rf "$TREE" "$HOME"/.local/bin/awl
-        mkdir -p "$TREE"/{bin,pfx,pfx_umu,tmp}
-    fi
 }
 
 downloadGlobalDependencies(){
@@ -86,64 +82,54 @@ prefixBuildUMU(){
 binaryInstall(){
     wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
-    (
-        cd "$PROGRAM"
-        wine TPBootstrapper.exe
-        rm -rf "$PROGRAM"/TPBootstrapper*
-    )
-    (
-        cd src/
-        chmod +x awl game-list
-        cp awl "$TREE"/
-        cp game-list "$TREE"/
-        ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
-    )
+    (cd "$PROGRAM" && wine TPBootstrapper.exe)
+    cp "$INSTALLER_DIR"/src/{awl,game-list} "$TREE"/
+    chmod +x "$TREE"/{awl,game-list}
+    ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
 }
 
 case $1 in
     "--help")
+        printf "\e[1mgit pull\033[0m: Updates the Arcade.Wrapper-Linux (Repo).\n\n"
         printf "\e[1m[info]:\033[0m\n"
         printf "%-15s%-5s\n" "--help" "show this message."
-        printf "%-15s%-5s\n\n" "--version" "show wrapper version."
+        printf "%-15s%-5s\n" "--version" "show wrapper version."
+        printf "%-15s%-5s\n\n" "--update" "updates the awl and game-list binary files."
         printf "\e[1m[installation methods]:\033[0m\n"
-        printf "%-25s%-5s\n" "--update" "updates the awl and game-list binary files."
+        printf "%-25s%-5s\n" "./install.sh" "clean installation (default)." 
+        printf "%-25s%-5s\n\n" "./install.sh --custom" "runs the installer in custom mode." 
+        printf "\e[1m[custom additional flags]:\033[0m\n"
+        printf "\e[1me.g: ./install.sh --custom --prefix-only\033[0m\n"
         printf "%-25s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
         printf "%-25s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
         printf "%-25s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
         printf "%-25s%-5s\n" "--binary-only" "installs only the binary files."
         exit
     ;;
-    "--prefix-only")
-        CLEANINSTALL=0
-        cleanAtomicTree
-        mkdir -p "$TREE"/{pfx,tmp}
-        downloadGlobalDependencies
-        prefixBuildWine
-        exit
-    ;;
-    "--prefix-umu-only")
-        CLEANINSTALL=0
-        cleanAtomicTree
-        mkdir -p "$TREE"/{pfx_umu,tmp}
-        downloadGlobalDependencies
-        prefixBuildUMU
-        exit
-    ;;
-    "--umu-proton-only")
-        CLEANINSTALL=0
-        cleanAtomicTree
-        mkdir -p "$TREE"/umu
-        wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
-        tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
-        mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
-        exit
-    ;;
-    "--binary-only")
-        CLEANINSTALL=0
-        cleanAtomicTree
-        export WINEPREFIX=${PREFIX}
-        mkdir -p "$TREE"/{bin,tmp}
-        binaryInstall
+    "--custom")
+        [[ $2 == "" ]] && printf "\e[1;31mERROR:\033[0m Invalid option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
+        mkdir -p "$TREE"/tmp
+        if [[ $2 == "--prefix-only" ]]; then
+            mkdir -p "$TREE"/pfx
+            downloadGlobalDependencies
+            prefixBuildWine
+        fi
+        if [[ $2 == "--prefix-umu-only" ]]; then
+            mkdir -p "$TREE"/pfx_umu
+            downloadGlobalDependencies
+            prefixBuildUMU
+        fi
+        if [[ $2 == "--umu-proton-only" ]]; then
+            mkdir -p "$TREE"/umu
+            wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
+            tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
+            mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
+        fi
+        if [[ $2 == "--binary-only" ]]; then
+            export WINEPREFIX=${PREFIX}
+            mkdir -p "$TREE"/bin
+            binaryInstall
+        fi
         exit
     ;;
     "--version")
@@ -151,17 +137,17 @@ case $1 in
         exit
     ;;
     "--update")
-        cp src/{awl,game-list} "$TREE"/ && exit
+        cp "$INSTALLER_DIR"/src/{awl,game-list} "$TREE"/ && exit
     ;;
 esac
 
 primaryDependencyChecker
 firstLock
-cleanAtomicTree
 downloadGlobalDependencies
 prefixBuildWine
 prefixBuildUMU
 binaryInstall
 
 rm -rf "$PREFIX"/drive_c/tmp "$PREFIX_UMU"/drive_c/tmp
+rm -rf "$PROGRAM"/TPBootstrapper*
 rm -rf "$TMP"
