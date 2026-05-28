@@ -103,6 +103,7 @@ case $1 in
         teknoRunWrapper
     ;;
     *)
+	cat "$TREE"/.logo
         printf "$BC%-15s$NC\n" "[system]:"
         printf "$BC%-15s$NC%-5s\n" "--dir" "Opens the local awl files."
         printf "$BC%-15s$NC%-5s\n\n" "--remove" "Removes all awl files and installations."
@@ -111,6 +112,6 @@ case $1 in
         printf "$BC%-15s$NC%-5s\n" "--ns" "Opens the emulator compatible with Namco System [147/246]."
         printf "$BC%-15s$NC%-5s\n" "--triforce" "Opens the emulator compatible with Sega Triforce."
         printf "$BC%-15s$NC%-5s\n" "--tekno" "Opens the wine-wrapper compatible with TeknoParrot."
-        printf "$BC%-15s$NC%-5s\n" "--tekno-umu" "Opens the umu-wrapper compatible with TeknoParrot."
+        printf "$BC%-15s$NC%-5s\n\n" "--tekno-umu" "Opens the umu-wrapper compatible with TeknoParrot."
     ;;
 esac

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.3-9"
+SCRIPT_VERSION="3.4"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
@@ -83,14 +83,14 @@ binaryInstall(){
     wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
     (cd "$PROGRAM" && wine TPBootstrapper.exe)
-    cp "$INSTALLER_DIR"/src/{awl,game-list} "$TREE"/
+    cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
     chmod +x "$TREE"/{awl,game-list}
     ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
 }
 
 case $1 in
     "--help")
-        printf "\e[1mgit pull\033[0m: Updates the Arcade.Wrapper-Linux (Repo).\n\n"
+        printf "\n\e[1mgit pull\033[0m: Updates the Arcade.Wrapper-Linux (Repo).\n\n"
         printf "\e[1m[info]:\033[0m\n"
         printf "%-15s%-5s\n" "--help" "show this message."
         printf "%-15s%-5s\n" "--version" "show wrapper version."
@@ -103,7 +103,7 @@ case $1 in
         printf "%-25s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
         printf "%-25s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
         printf "%-25s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
-        printf "%-25s%-5s\n" "--binary-only" "installs only the binary files."
+        printf "%-25s%-5s\n\n" "--binary-only" "installs only the binary files."
         exit
     ;;
     "--custom")
@@ -137,7 +137,7 @@ case $1 in
         exit
     ;;
     "--update")
-        cp "$INSTALLER_DIR"/src/{awl,game-list} "$TREE"/ && exit
+        cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/ && exit
     ;;
 esac
 
