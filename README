@@ -22,6 +22,10 @@ Installation:
 Script Dependencies:
 https://github.com/sakaki91/Arcade.Runtime-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested
 
+* Recommended:
+    (git clone https://github.com/sakaki91/Arcade.Wrapper-Linux && cd Arcade.Wrapper-Linux && ./install.sh)
+
+* Manual:
     $ cd ~/
     $ git clone https://github.com/sakaki91/Arcade.Wrapper-Linux
     $ cd Arcade.Wrapper-Linux
