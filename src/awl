@@ -103,7 +103,7 @@ case $1 in
         teknoRunWrapper
     ;;
     *)
-	cat .logo
+	cat "$TREE"/.logo
         printf "$BC%-15s$NC\n" "[system]:"
         printf "$BC%-15s$NC%-5s\n" "--dir" "Opens the local awl files."
         printf "$BC%-15s$NC%-5s\n\n" "--remove" "Removes all awl files and installations."
