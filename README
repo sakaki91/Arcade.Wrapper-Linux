@@ -11,7 +11,14 @@ Getting Started:
 ----------------
 First, check the compatibility list to confirm that your game is documented:
 https://www.github.com/sakaki91/Arcade.Wrapper-Linux/wiki/2.-Currently-supported-games
+
 * Currently compatible: 54 games.
+	* 35 Games via Wine.
+	* 7 Games via UMU
+	* 7 Sega Triforce Games via Dolphin.
+	* 6 Namco System (147/246) Games via Play!.
+
+* Games tested and currently broken: 12 games.
 
 I don't support games that require APM3 for obvious reasons (I don't pay for TeknoParrot, and I don't want to).
 
