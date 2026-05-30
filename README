@@ -13,10 +13,10 @@ First, check the compatibility list to confirm that your game is documented:
 https://www.github.com/sakaki91/Arcade.Wrapper-Linux/wiki/2.-Currently-supported-games
 
 * Currently compatible: 54 games.
-	* 35 Games via Wine.
-	* 7 Games via UMU
+	* 35 Games via Wine-Staging.
+	* 7 Games via UMU & Proton.
 	* 7 Sega Triforce Games via Dolphin.
-	* 6 Namco System (147/246) Games via Play!.
+	* 6 Namco System (147/246) Games via Play.
 
 * Games tested and currently broken: 12 games.
 
@@ -38,10 +38,10 @@ https://github.com/sakaki91/Arcade.Wrapper-Linux/wiki/3.-Dependencies-and-Distro
     $ cd ~/
     $ git clone https://github.com/sakaki91/Arcade.Wrapper-Linux
     $ cd Arcade.Wrapper-Linux
-	$ git pull
+    $ git pull
     $ chmod +x install.sh
     $ ./install.sh
-	$ awl
+    $ awl
 
 
 What does the script do?
@@ -54,6 +54,5 @@ Installs the dependencies, which are:
 * DXVK.
 * UMU-Proton.
 * Wine Mono (for UMU).
-
 
 And creates a basic structure in ~/.local/share/awl/ making it possible to call the middleware with: $ awl
