@@ -32,7 +32,7 @@ Script Dependencies:
 https://github.com/sakaki91/Arcade.Wrapper-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested
 
 * Recommended:
-    $ (wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/awl-install.sh && bash awl-install.sh)
+    $ wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/awl-install.sh && bash awl-install.sh
 
 * Manual:
     $ cd ~/
