@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.4-2"
+SCRIPT_VERSION="3.4-3"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
@@ -83,10 +83,15 @@ binaryInstall(){
     wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
     (cd "$PROGRAM" && wine TPBootstrapper.exe)
-    cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
+    mv "$INSTALLER_DIR"/{awl,game-list,.logo} "$TREE"/
     chmod +x "$TREE"/{awl,game-list}
     ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
 }
+
+primaryDependencyChecker
+wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl --directory-prefix="$INSTALLER_DIR" &>> /dev/null
+wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list --directory-prefix="$INSTALLER_DIR" &>> /dev/null
+wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/.logo --directory-prefix="$INSTALLER_DIR" &>> /dev/null
 
 case $1 in
     "--help")
@@ -137,11 +142,10 @@ case $1 in
         exit
     ;;
     "--update")
-        cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/ && exit
+        cp "$INSTALLER_DIR"/{awl,game-list,.logo} "$TREE"/ && exit
     ;;
 esac
 
-primaryDependencyChecker
 firstLock
 downloadGlobalDependencies
 prefixBuildWine
