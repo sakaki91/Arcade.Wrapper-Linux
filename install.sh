@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.4-4"
+SCRIPT_VERSION="3.4-5"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
@@ -28,7 +28,8 @@ firstLock(){
         read -p "[Y/n]: " cleanInstallSelection
 	[[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
-            rm -rf "$TREE" "$HOME"/.local/bin/awl
+	    [[ -d "$TREE" ]] && rm -rf "$TREE"
+            [[ -d "$HOME"/.local/bin/awl ]] && rm -rf "$HOME"/.local/bin/awl
             mkdir -p "$TREE"/{bin,pfx,pfx_umu,tmp}
             break
         elif [[ $cleanInstallSelection == "N" || $cleanInstallSelection == "n" ]]; then
@@ -84,6 +85,7 @@ binaryInstall(){
     wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
     (cd "$PROGRAM" && wine TPBootstrapper.exe)
+    cp -r "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
 }
 
 case $1 in
@@ -134,25 +136,14 @@ case $1 in
         exit
     ;;
     "--update")
-        (
-		cd "$TREE"
-		curl -Os https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl
-		curl -Os https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list
-		chmod +x awl game-list
-	)
+	cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
+	chmod +x "$TREE"/{awl,game-list}
 	exit
     ;;
 esac
 
 primaryDependencyChecker
 firstLock
-[[ ! -d "$TREE" ]] && mkdir -p "$TREE"
-[[ ! -d "$HOME"/.local/bin ]] && mkdir -p "$HOME"/.local/bin 
-[[ ! -f "$INSTALLER_DIR"/awl ]] && curl -o "$TREE"/awl https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl
-[[ ! -f "$INSTALLER_DIR"/game-list ]] && curl -o "$TREE"/game-list https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list
-[[ ! -f "$INSTALLER_DIR"/.logo ]] && curl -o "$TREE"/.logo https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/.logo
-[[ ! -f "$HOME"/.local/bin/awl ]] && ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
-chmod +x "$TREE"/{awl,game-list}
 downloadGlobalDependencies
 prefixBuildWine
 prefixBuildUMU

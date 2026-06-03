@@ -13,11 +13,6 @@ First, check the compatibility list to confirm that your game is documented:
 https://www.github.com/sakaki91/Arcade.Wrapper-Linux/wiki/2.-Currently-supported-games
 
 * Currently compatible: 55 games.
-	* 35 Games via Wine-Staging.
-	* 7 Games via UMU & Proton.
-	* 7 Sega Triforce Games via Dolphin.
-	* 6 Namco System (147/246) Games via Play.
-
 * Games tested and currently broken: 12 games.
 
 I don't support games that require APM3 for obvious reasons (I don't pay for TeknoParrot, and I don't want to).
@@ -31,10 +26,6 @@ Installation:
 Script Dependencies:
 https://github.com/sakaki91/Arcade.Wrapper-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested
 
-* Recommended:
-    $ wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/awl-install.sh && bash awl-install.sh
-
-* Manual:
     $ cd ~/
     $ git clone https://github.com/sakaki91/Arcade.Wrapper-Linux
     $ cd Arcade.Wrapper-Linux
@@ -55,4 +46,4 @@ Installs the dependencies, which are:
 * UMU-Proton.
 * Wine Mono (for UMU).
 
-And creates a basic structure in ~/.local/share/awl/ making it possible to call the middleware with: $ awl
+And creates a basic structure in ~/.local/share/awl/ (and: ~/.local/bin/awl) making it possible to call the middleware with: $ awl
