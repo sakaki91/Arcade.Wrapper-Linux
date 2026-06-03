@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.4-5"
+SCRIPT_VERSION="3.4-6"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
@@ -86,6 +86,8 @@ binaryInstall(){
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
     (cd "$PROGRAM" && wine TPBootstrapper.exe)
     cp -r "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
+    [[ ! -d "$HOME"/.local/bin ]] && mkdir -p "$HOME"/.local/bin
+    ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
 }
 
 case $1 in
@@ -126,7 +128,6 @@ case $1 in
         fi
         if [[ $2 == "--binary-only" ]]; then
             export WINEPREFIX=${PREFIX}
-            mkdir -p "$TREE"/bin
             binaryInstall
         fi
         exit
