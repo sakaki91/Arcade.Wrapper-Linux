@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.4-3"
+SCRIPT_VERSION="3.4-4"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
@@ -13,10 +13,10 @@ PREFIX=${TREE}/pfx
 PREFIX_UMU=${TREE}/pfx_umu
 
 primaryDependencyChecker(){
-    dependencies=(umu-run wine bash wget unzip tar zenity)
+    dependencies=(umu-run wine bash wget unzip tar)
     for cmd in "${dependencies[@]}"; do
         if ! command -v "$cmd" >/dev/null 2>&1; then
-            printf "$cmd \e[1;31mnot found\033[0m, install it and try again.\n" && exit 1
+            printf "\e[1;91mERROR:\033[0m $cmd, install it and try again.\n" && exit 1
         fi
     done
 }
@@ -26,6 +26,7 @@ firstLock(){
         clear
         printf "\e[1;33mWARNING:\033[0m This will delete everything contained in $TREE\nFor more installation methods, type: '\e[1m./install --help\033[0m'\nWould you like to continue with a clean installation?\n"
         read -p "[Y/n]: " cleanInstallSelection
+	[[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
             rm -rf "$TREE" "$HOME"/.local/bin/awl
             mkdir -p "$TREE"/{bin,pfx,pfx_umu,tmp}
@@ -33,7 +34,7 @@ firstLock(){
         elif [[ $cleanInstallSelection == "N" || $cleanInstallSelection == "n" ]]; then
             exit
         else
-            printf "\e[1;31mERROR:\033[0m Invalid option.\n"
+            printf "\e[1;91mERROR:\033[0m Invalid option.\n"
             sleep 1.5
         fi
     done
@@ -60,7 +61,7 @@ prefixBuildWine(){
     wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d11 /d native,builtin /f
     wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d8 /d native,builtin /f
     wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d9 /d native,builtin /f
-    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v dxgi /d native,builtin /f   
+    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v dxgi /d native,builtin /f
 }
 
 prefixBuildUMU(){
@@ -83,28 +84,19 @@ binaryInstall(){
     wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
     (cd "$PROGRAM" && wine TPBootstrapper.exe)
-    mv "$INSTALLER_DIR"/{awl,game-list,.logo} "$TREE"/
-    chmod +x "$TREE"/{awl,game-list}
-    ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
 }
-
-primaryDependencyChecker
-wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl --directory-prefix="$INSTALLER_DIR" &>> /dev/null
-wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list --directory-prefix="$INSTALLER_DIR" &>> /dev/null
-wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/.logo --directory-prefix="$INSTALLER_DIR" &>> /dev/null
 
 case $1 in
     "--help")
-        printf "\n\e[1mgit pull\033[0m: Updates the Arcade.Wrapper-Linux (Repo).\n\n"
-        printf "\e[1m[info]:\033[0m\n"
+        printf "\n\e[1minfo:\033[0m\n"
         printf "%-15s%-5s\n" "--help" "show this message."
         printf "%-15s%-5s\n" "--version" "show wrapper version."
         printf "%-15s%-5s\n\n" "--update" "updates the awl and game-list binary files."
-        printf "\e[1m[installation methods]:\033[0m\n"
+        printf "\e[1minstallation methods:\033[0m\n"
         printf "%-25s%-5s\n" "./install.sh" "clean installation (default)." 
         printf "%-25s%-5s\n\n" "./install.sh --custom" "runs the installer in custom mode." 
-        printf "\e[1m[custom additional flags]:\033[0m\n"
-        printf "\e[1me.g: ./install.sh --custom --prefix-only\033[0m\n"
+        printf "\e[1mcustom additional flags:\033[0m\n"
+	printf "\e[1m(e.g: ./install.sh --custom --prefix-only)\033[0m\n"
         printf "%-25s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
         printf "%-25s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
         printf "%-25s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
@@ -112,7 +104,7 @@ case $1 in
         exit
     ;;
     "--custom")
-        [[ $2 == "" ]] && printf "\e[1;31mERROR:\033[0m Invalid option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
+        [[ $2 == "" ]] && printf "\e[1;91mERROR:\033[0m Invalid option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
         mkdir -p "$TREE"/tmp
         if [[ $2 == "--prefix-only" ]]; then
             mkdir -p "$TREE"/pfx
@@ -142,11 +134,25 @@ case $1 in
         exit
     ;;
     "--update")
-        cp "$INSTALLER_DIR"/{awl,game-list,.logo} "$TREE"/ && exit
+        (
+		cd "$TREE"
+		curl -Os https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl
+		curl -Os https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list
+		chmod +x awl game-list
+	)
+	exit
     ;;
 esac
 
+primaryDependencyChecker
 firstLock
+[[ ! -d "$TREE" ]] && mkdir -p "$TREE"
+[[ ! -d "$HOME"/.local/bin ]] && mkdir -p "$HOME"/.local/bin 
+[[ ! -f "$INSTALLER_DIR"/awl ]] && curl -o "$TREE"/awl https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl
+[[ ! -f "$INSTALLER_DIR"/game-list ]] && curl -o "$TREE"/game-list https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list
+[[ ! -f "$INSTALLER_DIR"/.logo ]] && curl -o "$TREE"/.logo https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/.logo
+[[ ! -f "$HOME"/.local/bin/awl ]] && ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
+chmod +x "$TREE"/{awl,game-list}
 downloadGlobalDependencies
 prefixBuildWine
 prefixBuildUMU
@@ -155,3 +161,6 @@ binaryInstall
 rm -rf "$PREFIX"/drive_c/tmp "$PREFIX_UMU"/drive_c/tmp
 rm -rf "$PROGRAM"/TPBootstrapper*
 rm -rf "$TMP"
+
+wineserver -w
+printf "\e[1;92mDone!\n\e[0m"
