@@ -26,7 +26,7 @@ firstLock(){
         clear
         printf "\e[1;33mWARNING:\033[0m This will delete everything contained in $TREE\nFor more installation methods, type: '\e[1m./install --help\033[0m'\nWould you like to continue with a clean installation?\n"
         read -p "[Y/n]: " cleanInstallSelection
-	[[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
+        [[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
 	    [[ -d "$TREE" ]] && rm -rf "$TREE"
             [[ -d "$HOME"/.local/bin/awl ]] && rm -rf "$HOME"/.local/bin/awl
@@ -100,7 +100,7 @@ case $1 in
         printf "%-25s%-5s\n" "./install.sh" "clean installation (default)." 
         printf "%-25s%-5s\n\n" "./install.sh --custom" "runs the installer in custom mode." 
         printf "\e[1mcustom additional flags:\033[0m\n"
-	printf "\e[1m(e.g: ./install.sh --custom --prefix-only)\033[0m\n"
+        printf "\e[1m(e.g: ./install.sh --custom --prefix-only)\033[0m\n"
         printf "%-25s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
         printf "%-25s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
         printf "%-25s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
@@ -137,9 +137,9 @@ case $1 in
         exit
     ;;
     "--update")
-	cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
-	chmod +x "$TREE"/{awl,game-list}
-	exit
+        cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
+        chmod +x "$TREE"/{awl,game-list}
+        exit
     ;;
 esac
 
