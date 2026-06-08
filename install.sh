@@ -85,7 +85,7 @@ binaryInstall(){
     wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
     unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
     (cd "$PROGRAM" && wine TPBootstrapper.exe)
-    cp -r "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
+    cp -r "$INSTALLER_DIR"/src/{awl,game-list} "$TREE"/
     [[ ! -d "$HOME"/.local/bin ]] && mkdir -p "$HOME"/.local/bin
     ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
 }
@@ -93,52 +93,45 @@ binaryInstall(){
 case $1 in
     "--help")
         printf "\n\e[1minfo:\033[0m\n"
-        printf "%-15s%-5s\n" "--help" "show this message."
-        printf "%-15s%-5s\n" "--version" "show wrapper version."
-        printf "%-15s%-5s\n\n" "--update" "updates the awl and game-list binary files."
+        printf "%-35s%-5s\n" "--help" "show this message."
+        printf "%-35s%-5s\n\n" "--version" "show wrapper version."
         printf "\e[1minstallation methods:\033[0m\n"
-        printf "%-25s%-5s\n" "./install.sh" "clean installation (default)." 
-        printf "%-25s%-5s\n\n" "./install.sh --custom" "runs the installer in custom mode." 
+        printf "%-35s%-5s\n" "./install.sh" "clean installation (default)." 
+        printf "%-35s%-5s\n\n" "./install.sh --custom" "runs the installer in custom mode." 
         printf "\e[1mcustom additional flags:\033[0m\n"
-        printf "\e[1m(e.g: ./install.sh --custom --prefix-only)\033[0m\n"
-        printf "%-25s%-5s\n" "--prefix-only" "creates only the Wine prefix." 
-        printf "%-25s%-5s\n" "--prefix-umu-only" "creates only the UMU prefix." 
-        printf "%-25s%-5s\n" "--umu-proton-only" "installs only the UMU Proton files." 
-        printf "%-25s%-5s\n\n" "--binary-only" "installs only the binary files."
+        printf "%-35s%-5s\n" "--custom --prefix-only" "creates only the Wine prefix." 
+        printf "%-35s%-5s\n" "--custom --prefix-umu-only" "creates only the UMU prefix." 
+        printf "%-35s%-5s\n" "--custom --umu-proton-only" "installs only the UMU Proton files." 
+        printf "%-35s%-5s\n\n" "--custom --binary-only" "installs only the binary files."
         exit
     ;;
     "--custom")
-        [[ $2 == "" ]] && printf "\e[1;91mERROR:\033[0m Invalid option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
         mkdir -p "$TREE"/tmp
-        if [[ $2 == "--prefix-only" ]]; then
+	if [[ -z $2 ]]; then
+		printf "\e[1;91mERROR:\033[0m Empty option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
+	elif [[ $2 == "--prefix-only" ]]; then
             mkdir -p "$TREE"/pfx
             downloadGlobalDependencies
             prefixBuildWine
-        fi
-        if [[ $2 == "--prefix-umu-only" ]]; then
+    	elif [[ $2 == "--prefix-umu-only" ]]; then
             mkdir -p "$TREE"/pfx_umu
             downloadGlobalDependencies
             prefixBuildUMU
-        fi
-        if [[ $2 == "--umu-proton-only" ]]; then
+   	 elif [[ $2 == "--umu-proton-only" ]]; then
             mkdir -p "$TREE"/umu
             wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
             tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
             mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
-        fi
-        if [[ $2 == "--binary-only" ]]; then
+   	elif [[ $2 == "--binary-only" ]]; then
             export WINEPREFIX=${PREFIX}
             binaryInstall
-        fi
+        else
+		printf "\e[1;91mERROR:\e[0m Invalid Option.\n"
+	fi
         exit
     ;;
     "--version")
         printf "awl-installer $SCRIPT_VERSION\n"
-        exit
-    ;;
-    "--update")
-        cp "$INSTALLER_DIR"/src/{awl,game-list,.logo} "$TREE"/
-        chmod +x "$TREE"/{awl,game-list}
         exit
     ;;
 esac

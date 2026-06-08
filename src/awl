@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_VERSION="3.4-7"
+
 TREE=${HOME}/.local/share/awl
 PROGRAM=${TREE}/bin
 TMP=${TREE}/tmp
@@ -11,6 +13,25 @@ DOLPHIN_LOCATION=${FLATPAK_LOCALFILES}/org.DolphinEmu.dolphin-emu
 PLAY_LOCATION=${FLATPAK_LOCALFILES}/org.purei.Play
 
 function runGameTekno(){
+	while true; do
+		if [[ ! $(cat /etc/locale.gen | grep en_US.UTF-8 | tr -d '#') ]]; then
+			printf "\e[1;93mWARNING:\e[0m You do NOT have en_US defined in your locale.gen, which may break some Lua games. Do you still wish to continue? "
+			read -p "[Y/n] " userLocaleInput
+			[[ -z $userLocaleInput ]] && userLocaleInput="y"
+			if [[ $userLocaleInput == "Y" || $userLocaleInput == "y" ]]; then
+				break
+			elif [[ $userLocaleInput == "N" || $userLocaleInput == "n" ]]; then
+				printf "For more information, see: https://github.com/sakaki91/Arcade.Wrapper-Linux/issues/2\n"
+				exit
+			else
+				printf "\e[1;91mERROR:\e[0m Invalid option.\n"
+				sleep 1.5
+				clear
+			fi
+		else
+			break
+		fi
+	done
 	LC_ALL=en_US.UTF-8
     	LC_NUMERIC=en_US.UTF-8
 	LANG=en_US.UTF-8
@@ -66,9 +87,22 @@ function runGameNamcoSys(){
 }
 
 case $1 in
+    "--version")
+    	printf "awl-\e[1m$SCRIPT_VERSION\e[0m\n"
+    ;;
     "--dir")
         xdg-open "$HOME/.local/share/awl" &>> /dev/null
         printf "If nothing happens, go to: \e[1m$HOME/.local/share/awl\e[0m\n"
+    ;;
+    "--update")
+    	(
+		cd "$TREE"
+		[[ ! $(command -v wget) ]] && printf "\e[1;91mERROR:\e[0m wget not found.\n" && exit
+		rm -f "$TREE"/{awl,game-list}
+		wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl 
+		wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list
+		chmod +x "$TREE"/{awl,game-list}
+	)
     ;;
     "--game-list")
         "$TREE"/game-list
@@ -88,9 +122,10 @@ case $1 in
         runGameTekno
     ;;
     *)
-	cat "$TREE"/.logo
-        printf "\e[1msystem:\e[0m\n"
-        printf "\e[1m%-15s\e[0m %0s\n\n" "--dir" "Opens the local awl files."
+        printf "\n\e[1msystem:\e[0m\n"
+	printf "\e[1m%-15s\e[0m %0s\n" "--version" "Show the awl version."
+        printf "\e[1m%-15s\e[0m %0s\n" "--dir" "Opens the local awl files."
+	printf "\e[1m%-15s\e[0m %0s\n\n" "--update" "Update the awl and game-list binaries only."
 	printf "\e[1mwrapper:\e[0m\n"
         printf "\e[1m%-15s\e[0m %0s\n" "--game-list" "Shows the compatibility list."
         printf "\e[1m%-15s\e[0m %0s\n" "--ns" "Opens the emulator compatible with Namco System [147/246]."
