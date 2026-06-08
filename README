@@ -13,7 +13,7 @@ Getting Started:
 First, check the compatibility list to confirm that your game is documented:
 https://www.github.com/sakaki91/Arcade.Wrapper-Linux/wiki/2.-Currently-supported-games
 
-* Currently compatible: 55 games.
+* Currently compatible: 57 games.
 * Games tested and currently broken: 12 games.
 
 I don't support games that require APM3 for obvious reasons (I don't pay for TeknoParrot, and I don't want to).

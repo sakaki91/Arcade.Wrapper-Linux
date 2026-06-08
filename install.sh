@@ -1,6 +1,5 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.4-6"
 DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
@@ -28,7 +27,7 @@ firstLock(){
         read -p "[Y/n]: " cleanInstallSelection
         [[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
-	    [[ -d "$TREE" ]] && rm -rf "$TREE"
+	        [[ -d "$TREE" ]] && rm -rf "$TREE"
             [[ -d "$HOME"/.local/bin/awl ]] && rm -rf "$HOME"/.local/bin/awl
             mkdir -p "$TREE"/{bin,pfx,pfx_umu,tmp}
             break
@@ -107,27 +106,27 @@ case $1 in
     ;;
     "--custom")
         mkdir -p "$TREE"/tmp
-	if [[ -z $2 ]]; then
-		printf "\e[1;91mERROR:\033[0m Empty option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
-	elif [[ $2 == "--prefix-only" ]]; then
-            mkdir -p "$TREE"/pfx
-            downloadGlobalDependencies
-            prefixBuildWine
-    	elif [[ $2 == "--prefix-umu-only" ]]; then
-            mkdir -p "$TREE"/pfx_umu
-            downloadGlobalDependencies
-            prefixBuildUMU
-   	 elif [[ $2 == "--umu-proton-only" ]]; then
-            mkdir -p "$TREE"/umu
-            wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
-            tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
-            mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
-   	elif [[ $2 == "--binary-only" ]]; then
-            export WINEPREFIX=${PREFIX}
-            binaryInstall
-        else
-		printf "\e[1;91mERROR:\e[0m Invalid Option.\n"
-	fi
+        if [[ -z $2 ]]; then
+            printf "\e[1;91mERROR:\033[0m Empty option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
+        elif [[ $2 == "--prefix-only" ]]; then
+                mkdir -p "$TREE"/pfx
+                downloadGlobalDependencies
+                prefixBuildWine
+            elif [[ $2 == "--prefix-umu-only" ]]; then
+                mkdir -p "$TREE"/pfx_umu
+                downloadGlobalDependencies
+                prefixBuildUMU
+        elif [[ $2 == "--umu-proton-only" ]]; then
+                mkdir -p "$TREE"/umu
+                wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
+                tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
+                mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
+        elif [[ $2 == "--binary-only" ]]; then
+                export WINEPREFIX=${PREFIX}
+                binaryInstall
+            else
+            printf "\e[1;91mERROR:\e[0m Invalid Option.\n"
+        fi
         exit
     ;;
     "--version")

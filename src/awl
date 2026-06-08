@@ -32,9 +32,9 @@ function runGameTekno(){
 			break
 		fi
 	done
-	LC_ALL=en_US.UTF-8
-    	LC_NUMERIC=en_US.UTF-8
-	LANG=en_US.UTF-8
+	export LC_ALL=en_US.UTF-8
+    export LC_NUMERIC=en_US.UTF-8
+	export LANG=en_US.UTF-8
    	if [[ $RUNNER == "wine" ]]; then
 	       	WINEPREFIX=$PREFIX wine $PROGRAM/TeknoParrotUi.exe
 	elif [[ $RUNNER == "umu" ]]; then
@@ -48,18 +48,18 @@ function runGameTriforce(){
    	[[ ! -f "$DOLPHIN_LOCATION"/data/dolphin-emu/Triforce/segaboot.gcm ]] && printf "\e[1;91mERROR:\e[0m File not found: segaboot.gcm\n==> (https://github.com/sakaki91/Arcade.Wrapper-Linux/issues/7)\n" && exit
    	while true; do
  		DOLPHIN_ROM=$(zenity --file-selection --title="Select the desired ROM (Dolphin):" )
-          	if [[ -z "$DOLPHIN_ROM" ]]; then
+       	if [[ -z "$DOLPHIN_ROM" ]]; then
 			printf "\e[1;91mERROR:\e[0m No rom selected.\nWould you like to try again?\n"
-        	   	read -p "[Y/n] " zenityDecision
+       	   	read -p "[Y/n] " zenityDecision
 			if [[ "$zenityDecision" == "Y" || "$zenityDecision" == "y" ]]; then
-       		       		clear
-        		elif [[ $zenityDecision == "N" || $zenityDecision == "n" ]]; then
-       	        		break
-	        	else
-       		       		printf "\e[1;91mERROR:\e[0m Invalid option.\n"
-        		fi
+       		    clear
+        	elif [[ $zenityDecision == "N" || $zenityDecision == "n" ]]; then
+       	       	break
+	    	else
+       	   		printf "\e[1;91mERROR:\e[0m Invalid option.\n"
+    		fi
 		fi
-			[[ "$DOLPHIN_ROM" != "" ]] && flatpak run org.DolphinEmu.dolphin-emu "$DOLPHIN_ROM" && exit
+		[[ "$DOLPHIN_ROM" != "" ]] && flatpak run org.DolphinEmu.dolphin-emu "$DOLPHIN_ROM" && exit
 	done
 }
 
@@ -67,22 +67,22 @@ function runGameNamcoSys(){
 	[[ ! "$(command -v flatpak)" ]] && printf "\e[1;91mERROR:\e[0m Flatpak not found.\n" && exit
 	[[ ! "$(flatpak list | grep Play)" ]] && printf "\e[1;91mERROR:\e[0m Emulator not found: Play! (Flatpak).\n" && exit
 	while true; do
-        	PLAY_ROM_DIR="$PLAY_LOCATION/config/Play Data Files/arcaderoms"
+        PLAY_ROM_DIR="$PLAY_LOCATION/config/Play Data Files/arcaderoms"
 		[[ ! -d "$TREE"/play ]] && ln -sf "$PLAY_ROM_DIR" "$TREE"/play
-        	printf "\e[1;33mWARNING:\e[0m The dump files for the Play emulator games MUST be in this folder:\n($PLAY_ROM_DIR).\notherwise an error will occur due to emulator limitations.\nPress 'enter' to continue" && read
-        	PLAY_ROM_SELECTION=$(zenity --file-selection --directory --title="Select the desired ROM (Play, Folder only):")
-	       	if [[ -z "$PLAY_ROM_SELECTION" ]]; then
+        printf "\e[1;33mWARNING:\e[0m The dump files for the Play emulator games MUST be in this folder:\n($PLAY_ROM_DIR).\notherwise an error will occur due to emulator limitations.\nPress 'enter' to continue" && read
+        PLAY_ROM_SELECTION=$(zenity --file-selection --directory --title="Select the desired ROM (Play, Folder only):")
+	    if [[ -z "$PLAY_ROM_SELECTION" ]]; then
  			printf "\e[1;91mERROR:\e[0m No rom selected.\nWould you like to try again?\n"
-       			read -p "[Y/n] " zenityDecision
-       			if [[ $zenityDecision == "Y" || $zenityDecision == "y" ]]; then
-                		clear
-	                elif [[ $zenityDecision == "N" || $zenityDecision == "n" ]]; then
-     			        break
-      			else
-	               		printf "\e[1;91mERROR:\e[0m Invalid option.\n" && exit
-           		fi
+       		read -p "[Y/n] " zenityDecision
+       		if [[ $zenityDecision == "Y" || $zenityDecision == "y" ]]; then
+            	clear
+	        elif [[ $zenityDecision == "N" || $zenityDecision == "n" ]]; then
+     		    break
+      		else
+	        	printf "\e[1;91mERROR:\e[0m Invalid option.\n" && exit
+           	fi
 		fi
-			[[ "$PLAY_ROM_SELECTION" != "" ]] && PLAY_ROM=$(basename $PLAY_ROM_SELECTION) && flatpak run org.purei.Play --arcade "$PLAY_ROM" && exit
+		[[ "$PLAY_ROM_SELECTION" != "" ]] && PLAY_ROM=$(basename $PLAY_ROM_SELECTION) && flatpak run org.purei.Play --arcade "$PLAY_ROM" && exit
 	done
 }
 
@@ -123,10 +123,10 @@ case $1 in
     ;;
     *)
         printf "\n\e[1msystem:\e[0m\n"
-	printf "\e[1m%-15s\e[0m %0s\n" "--version" "Show the awl version."
+		printf "\e[1m%-15s\e[0m %0s\n" "--version" "Show the awl version."
         printf "\e[1m%-15s\e[0m %0s\n" "--dir" "Opens the local awl files."
-	printf "\e[1m%-15s\e[0m %0s\n\n" "--update" "Update the awl and game-list binaries only."
-	printf "\e[1mwrapper:\e[0m\n"
+		printf "\e[1m%-15s\e[0m %0s\n\n" "--update" "Update the awl and game-list binaries only."
+		printf "\e[1mwrapper:\e[0m\n"
         printf "\e[1m%-15s\e[0m %0s\n" "--game-list" "Shows the compatibility list."
         printf "\e[1m%-15s\e[0m %0s\n" "--ns" "Opens the emulator compatible with Namco System [147/246]."
         printf "\e[1m%-15s\e[0m %0s\n" "--triforce" "Opens the emulator compatible with Sega Triforce."
