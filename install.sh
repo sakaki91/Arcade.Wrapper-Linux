@@ -15,7 +15,7 @@ primaryDependencyChecker(){
     dependencies=(umu-run wine bash wget unzip tar)
     for cmd in "${dependencies[@]}"; do
         if ! command -v "$cmd" >/dev/null 2>&1; then
-            printf "\e[1;91mERROR:\033[0m $cmd, install it and try again.\n" && exit 1
+            printf "\e[0;91mERROR:\033[0m $cmd is not installed, install it and try again.\n" && exit 1
         fi
     done
 }
@@ -23,7 +23,7 @@ primaryDependencyChecker(){
 firstLock(){
     while true; do
         clear
-        printf "\e[1;33mWARNING:\033[0m This will delete everything contained in $TREE\nFor more installation methods, type: '\e[1m./install --help\033[0m'\nWould you like to continue with a clean installation?\n"
+        printf "\e[0;33mWARNING:\033[0m This will delete everything contained in $TREE\nFor more installation methods, type: '\e[1m./install --help\033[0m'\nWould you like to continue with a clean installation?\n"
         read -p "[Y/n]: " cleanInstallSelection
         [[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
@@ -34,7 +34,7 @@ firstLock(){
         elif [[ $cleanInstallSelection == "N" || $cleanInstallSelection == "n" ]]; then
             exit
         else
-            printf "\e[1;91mERROR:\033[0m Invalid option.\n"
+            printf "\e[0;91mERROR:\033[0m Invalid option.\n"
             sleep 1.5
         fi
     done
@@ -107,7 +107,7 @@ case $1 in
     "--custom")
         mkdir -p "$TREE"/tmp
         if [[ -z $2 ]]; then
-            printf "\e[1;91mERROR:\033[0m Empty option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
+            printf "\e[0;91mERROR:\033[0m Empty option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
         elif [[ $2 == "--prefix-only" ]]; then
                 mkdir -p "$TREE"/pfx
                 downloadGlobalDependencies
@@ -125,12 +125,8 @@ case $1 in
                 export WINEPREFIX=${PREFIX}
                 binaryInstall
             else
-            printf "\e[1;91mERROR:\e[0m Invalid Option.\n"
+            printf "\e[0;91mERROR:\e[0m Invalid Option.\n"
         fi
-        exit
-    ;;
-    "--version")
-        printf "awl-installer $SCRIPT_VERSION\n"
         exit
     ;;
 esac
@@ -147,4 +143,4 @@ rm -rf "$PROGRAM"/TPBootstrapper*
 rm -rf "$TMP"
 
 wineserver -w
-printf "\e[1;92mDone!\n\e[0m"
+printf "\e[0;92mDone!\n\e[0m"
