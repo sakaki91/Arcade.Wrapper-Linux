@@ -1,21 +1,20 @@
 #!/bin/bash
 
-DXVK_VERSION="2.7.1"
 UMU_VERSION="10.0-4"
 UMU_MONO_VERSION="10.0.0"
 
 INSTALLER_DIR=$(pwd)
-TREE=${HOME}/.local/share/awl
-PROGRAM=${TREE}/bin
-TMP=${TREE}/tmp
-PREFIX=${TREE}/pfx
-PREFIX_UMU=${TREE}/pfx_umu
+TREE="$HOME/.local/share/awl"
+PROGRAM="$TREE/bin"
+TMP="$TREE/tmp"
+RUNNER="$TREE/proton-umu"
+PREFIX_UMU="$TREE/pfx_umu"
 
-primaryDependencyChecker(){
-    dependencies=(umu-run wine bash wget unzip tar)
+primaryDepCheck(){
+    dependencies=(umu-run bash wget unzip tar)
     for cmd in "${dependencies[@]}"; do
         if ! command -v "$cmd" >/dev/null 2>&1; then
-            printf "\e[0;91mERROR:\033[0m $cmd is not installed, install it and try again.\n" && exit 1
+            printf "\e[0;91mERROR:\033[0m $cmd is not installed, install it and try again.\nFor more information, see: \e[1mhttps://github.com/sakaki91/Arcade.Wrapper-Linux/wiki/3.-Dependencies-and-Distros-Hardware-tested\e[0m\n" && exit
         fi
     done
 }
@@ -23,13 +22,12 @@ primaryDependencyChecker(){
 firstLock(){
     while true; do
         clear
-        printf "\e[0;33mWARNING:\033[0m This will delete everything contained in $TREE\nFor more installation methods, type: '\e[1m./install --help\033[0m'\nWould you like to continue with a clean installation?\n"
+        printf "\e[0;33mWARNING:\033[0m This will delete everything contained in \e[1m$TREE\e[0m\nWould you like to continue with a clean installation?\n"
         read -p "[Y/n]: " cleanInstallSelection
         [[ -z $cleanInstallSelection ]] && cleanInstallSelection="y"
         if [[ $cleanInstallSelection == "Y" || $cleanInstallSelection == "y" ]]; then
-	        [[ -d "$TREE" ]] && rm -rf "$TREE"
-            [[ -d "$HOME"/.local/bin/awl ]] && rm -rf "$HOME"/.local/bin/awl
-            mkdir -p "$TREE"/{bin,pfx,pfx_umu,tmp}
+            [[ -d "$TREE" ]] && rm -rf "$TREE"
+            mkdir -p "$TREE"/{bin,pfx_umu,tmp}
             break
         elif [[ $cleanInstallSelection == "N" || $cleanInstallSelection == "n" ]]; then
             exit
@@ -40,107 +38,84 @@ firstLock(){
     done
 }
 
-downloadGlobalDependencies(){
-    wget -c https://aka.ms/dotnet/8.0/dotnet-runtime-win-x64.exe --directory-prefix="$TMP"
-    wget -c https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe --directory-prefix="$TMP"
-    wget -c https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/directx_Jun2010_redist.exe --directory-prefix="$TMP"
-}
-
-prefixBuildWine(){
-    export WINEPREFIX=${PREFIX}
-    wineboot -u
-    wine "$TMP"/dotnet-runtime-win-x64.exe /install /quiet /norestart
-    wine "$TMP"/windowsdesktop-runtime-win-x64.exe /install /quiet /norestart
-    wine "$TMP"/directx_Jun2010_redist.exe /Q /C /T:"C:\tmp"
-    wine "$PREFIX"/drive_c/tmp/DXSETUP.exe /silent
-    wget -c https://github.com/doitsujin/dxvk/releases/download/v$DXVK_VERSION/dxvk-$DXVK_VERSION.tar.gz --directory-prefix="$TMP"
-    tar -xvf "$TMP"/dxvk-$DXVK_VERSION.tar.gz --directory "$TMP"
-    mv "$TMP"/dxvk-$DXVK_VERSION/x32/*.dll "$PREFIX"/drive_c/windows/syswow64
-    mv "$TMP"/dxvk-$DXVK_VERSION/x64/*.dll "$PREFIX"/drive_c/windows/system32
-    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d10core /d native,builtin /f
-    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d11 /d native,builtin /f
-    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d8 /d native,builtin /f
-    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v d3d9 /d native,builtin /f
-    wine reg add "HKEY_CURRENT_USER\Software\Wine\DllOverrides" /v dxgi /d native,builtin /f
+downGlobalDeps(){
+    STATUS="\e[0;33m*\e[0m"
+    while true; do
+        clear
+        guestDependencies=(dotnet-runtime-win-x64.exe windowsdesktop-runtime-win-x64.exe directx_Jun2010_redist.exe UMU-Proton-$UMU_VERSION.tar.gz wine-mono-$UMU_MONO_VERSION-x86.msi TPBootstrapper.zip)
+        printf "[ $STATUS ] Downloading .NET 8 Runtime.\n"
+        [[ ! -f "$TMP"/${guestDependencies[0]} ]] && wget -c https://aka.ms/dotnet/8.0/${guestDependencies[0]} --directory-prefix="$TMP" &> "$TREE"/.awl-log
+        printf "[ $STATUS ] Downloading .NET 8 Desktop Runtime.\n"
+        [[ ! -f "$TMP"/${guestDependencies[1]} ]] && wget -c https://aka.ms/dotnet/8.0/${guestDependencies[1]} --directory-prefix="$TMP" &>> "$TREE"/.awl-log
+        printf "[ $STATUS ] Downloading DirectX Standalone Installer.\n"
+        [[ ! -f "$TMP"/${guestDependencies[2]} ]] && wget -c https://download.microsoft.com/download/8/4/a/84a35bf1-dafe-4ae8-82af-ad2ae20b6b14/${guestDependencies[2]} --directory-prefix="$TMP" &>> "$TREE"/.awl-log
+        printf "[ $STATUS ] Downloading UMU-Proton.\n"
+        [[ ! -f "$TMP"/${guestDependencies[3]} ]] && wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/${guestDependencies[3]} --directory-prefix="$TMP" &>> "$TREE"/.awl-log
+        printf "[ $STATUS ] Downloading Wine-Mono for UMU-Proton.\n"
+        [[ ! -f "$TMP"/${guestDependencies[4]} ]] && wget -c https://github.com/wine-mono/wine-mono/releases/download/wine-mono-$UMU_MONO_VERSION/${guestDependencies[4]} --directory-prefix="$TMP" &>> "$TREE"/.awl-log
+        printf "[ $STATUS ] Downloading TPBootstrapper.\n"
+        [[ ! -f "$TMP"/${guestDependencies[5]} ]] && wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP" &>> "$TREE"/.awl-log
+        [[ "$STATUS" == "\e[0;32m*\e[0m" ]] && break
+        for deps in "${guestDependencies[@]}"; do
+            if [[ ! -f "$TMP"/"$deps" ]]; then
+                printf "\e[0;91mERROR:\033[0m There was an error downloading the dependencies, see the log file at: $TREE/.awl-log\n" && exit
+            else
+                STATUS="\e[0;32m*\e[0m"
+            fi
+        done
+    done
 }
 
 prefixBuildUMU(){
-    wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
-    wget -c https://github.com/wine-mono/wine-mono/releases/download/wine-mono-$UMU_MONO_VERSION/wine-mono-$UMU_MONO_VERSION-x86.msi --directory-prefix="$TMP"
-    tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
-    mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
+    clear
+    printf "[ \e[0;33m*\e[0m ] Extracting UMU-Proton.\n"
+    tar -xf "$TMP/${guestDependencies[3]}" --directory "$TMP"
+    [[ ! -d "$TMP/UMU-Proton-$UMU_VERSION" ]] && printf "\e[0;91mERROR:\033[0m An error occurred while extracting umu proton. Please refer to the log file at: $TREE/.awl-log\n" && exit
+    mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$RUNNER"
+    [[ ! -d "$RUNNER" ]] && printf "\e[0;91mERROR:\033[0m An error occurred while moving umu proton. Please refer to the log file at: $TREE/.awl-log\n" && exit
+    printf "[ \e[0;33m*\e[0m ] Setting environment variables.\n"
     export GAMEID=0
-    export PROTONPATH="$TREE"/umu
+    export PROTONPATH="$TREE"/proton-umu
     export WINEPREFIX=${PREFIX_UMU}
-    umu-run wineboot -u
-    umu-run msiexec /i "$TMP"/wine-mono-$UMU_MONO_VERSION-x86.msi
-    umu-run "$TMP"/dotnet-runtime-win-x64.exe /install /quiet /norestart
-    umu-run "$TMP"/windowsdesktop-runtime-win-x64.exe /install /quiet /norestart
-    umu-run "$TMP"/directx_Jun2010_redist.exe /Q /C /T:"C:\tmp"
-    umu-run "$PREFIX_UMU"/drive_c/tmp/DXSETUP.exe /silent
+    printf "[ \e[0;33m*\e[0m ] Creating the structure (prefix).\n"
+    umu-run wineboot -u &>> "$TREE"/.awl-log
+    [[ ! -d "$PREFIX_UMU"/drive_c ]] && printf "\e[0;91mERROR:\033[0m An error occurred while creating the prefix. Please refer to the log file at: $TREE/.awl-log\n" && exit
+    printf "[ \e[0;33m*\e[0m ] Installing Wine-Mono for UMU-Proton.\n"
+    umu-run msiexec /i "$TMP"/wine-mono-$UMU_MONO_VERSION-x86.msi &>> "$TREE"/.awl-log
+    printf "[ \e[0;33m*\e[0m ] Installing .NET 8 Runtime.\n"
+    umu-run "$TMP"/dotnet-runtime-win-x64.exe /install /quiet /norestart &>> "$TREE"/.awl-log
+    printf "[ \e[0;33m*\e[0m ] Installing .NET 8 Desktop Runtime.\n"
+    umu-run "$TMP"/windowsdesktop-runtime-win-x64.exe /install /quiet /norestart &>> "$TREE"/.awl-log
+    printf "[ \e[0;33m*\e[0m ] Installing DirectX Standalone Installer (#1).\n"
+    umu-run "$TMP"/directx_Jun2010_redist.exe /Q /C /T:"C:\tmp" &>> "$TREE"/.awl-log
+    printf "[ \e[0;33m*\e[0m ] Installing DirectX Standalone Installer (#2).\n"
+    umu-run "$PREFIX_UMU"/drive_c/tmp/DXSETUP.exe /silent &>> "$TREE"/.awl-log
 }
 
 binaryInstall(){
-    wget -c https://github.com/nzgamer41/TPBootstrapper/releases/latest/download/TPBootstrapper.zip --directory-prefix="$TMP"
-    unzip "$TMP"/TPBootstrapper.zip -d "$PROGRAM"
-    (cd "$PROGRAM" && wine TPBootstrapper.exe)
+    printf "[ \e[0;33m*\e[0m ] Extracting TPBootstrapper.\n"
+    unzip "$TMP/${guestDependencies[5]}" -d "$PROGRAM" &>> "$TREE"/.awl-log
+    [[ ! -f "$PROGRAM"/TPBootstrapper.exe ]] && printf "\e[0;91mERROR:\033[0m An error occurred while extracting TPBootstrapper. Please refer to the log file at: $TREE/.awl-log\n" && exit
+    printf "[ \e[0;33m*\e[0m ] Installing TeknoParrot.\n"
+    (cd "$PROGRAM" && wine TPBootstrapper.exe &>> "$TREE"/.awl-log)
+    rm -rf "$PREFIX_UMU"/drive_c/tmp
+    rm -rf "$PROGRAM"/TPBootstrapper*
+    rm -rf "$TMP"
+    [[ ! -d "$PREFIX_UMU"/drive_c/tmp || ! -f "$PROGRAM"/TPBootstrapper.exe || ! -d "$TMP" ]] && printf "[ \e[0;32m*\e[0m ] Temporary files cleared.\n"
     cp -r "$INSTALLER_DIR"/src/{awl,game-list} "$TREE"/
     [[ ! -d "$HOME"/.local/bin ]] && mkdir -p "$HOME"/.local/bin
     ln -sf "$TREE"/awl "$HOME"/.local/bin/awl
+    [[ -f "$HOME"/.local/bin/awl ]] && printf "[ \e[0;32m*\e[0m ] Shortcut created in \e[1m"$HOME"/.local/bin\e[0m\n"
+    if [[ $(cat /etc/passwd | grep "$HOME" | grep bash) ]]; then
+        [[ ! $(cat "$HOME"/.bashrc | grep 'PATH="$HOME/.local/bin:$PATH"') ]] && printf "\nThe local binaries directory is NOT added to your shell's path, add it with:\n\e[1mecho 'export PATH="'$HOME/.local/bin:$PATH'"' >> "'$HOME'"/.bashrc\e[0m\n\n"
+    elif [[ $(cat /etc/passwd | grep "$HOME" | grep zsh) ]]; then
+        [[ ! $(cat "$HOME"/.zshrc | grep 'PATH="$HOME/.local/bin:$PATH"') ]] && printf "\nThe local binaries directory is NOT added to your shell's path, add it with:\n\e[1mecho 'export PATH="'$HOME/.local/bin:$PATH'"' >> "'$HOME'"/.zshrc\e[0m\n\n"
+    fi
 }
 
-case $1 in
-    "--help")
-        printf "\n\e[1minfo:\033[0m\n"
-        printf "%-35s%-5s\n" "--help" "show this message."
-        printf "%-35s%-5s\n\n" "--version" "show wrapper version."
-        printf "\e[1minstallation methods:\033[0m\n"
-        printf "%-35s%-5s\n" "./install.sh" "clean installation (default)." 
-        printf "%-35s%-5s\n\n" "./install.sh --custom" "runs the installer in custom mode." 
-        printf "\e[1mcustom additional flags:\033[0m\n"
-        printf "%-35s%-5s\n" "--custom --prefix-only" "creates only the Wine prefix." 
-        printf "%-35s%-5s\n" "--custom --prefix-umu-only" "creates only the UMU prefix." 
-        printf "%-35s%-5s\n" "--custom --umu-proton-only" "installs only the UMU Proton files." 
-        printf "%-35s%-5s\n\n" "--custom --binary-only" "installs only the binary files."
-        exit
-    ;;
-    "--custom")
-        mkdir -p "$TREE"/tmp
-        if [[ -z $2 ]]; then
-            printf "\e[0;91mERROR:\033[0m Empty option.\n\e[1mTry './install.sh --help' for more information.\033[0m\n" && exit 1
-        elif [[ $2 == "--prefix-only" ]]; then
-                mkdir -p "$TREE"/pfx
-                downloadGlobalDependencies
-                prefixBuildWine
-            elif [[ $2 == "--prefix-umu-only" ]]; then
-                mkdir -p "$TREE"/pfx_umu
-                downloadGlobalDependencies
-                prefixBuildUMU
-        elif [[ $2 == "--umu-proton-only" ]]; then
-                mkdir -p "$TREE"/umu
-                wget -c https://github.com/Open-Wine-Components/umu-proton/releases/download/UMU-Proton-$UMU_VERSION/UMU-Proton-$UMU_VERSION.tar.gz --directory-prefix="$TMP"
-                tar -xvf "$TMP"/UMU-Proton-$UMU_VERSION.tar.gz --directory "$TMP"
-                mv "$TMP"/UMU-Proton-$UMU_VERSION -T "$TREE"/umu
-        elif [[ $2 == "--binary-only" ]]; then
-                export WINEPREFIX=${PREFIX}
-                binaryInstall
-            else
-            printf "\e[0;91mERROR:\e[0m Invalid Option.\n"
-        fi
-        exit
-    ;;
-esac
-
-primaryDependencyChecker
+primaryDepCheck
 firstLock
-downloadGlobalDependencies
-prefixBuildWine
+downGlobalDeps
 prefixBuildUMU
 binaryInstall
-
-rm -rf "$PREFIX"/drive_c/tmp "$PREFIX_UMU"/drive_c/tmp
-rm -rf "$PROGRAM"/TPBootstrapper*
-rm -rf "$TMP"
-
 wineserver -w
-printf "\e[0;92mDone!\n\e[0m"

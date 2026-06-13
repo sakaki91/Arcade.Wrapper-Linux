@@ -1,19 +1,19 @@
 #!/bin/bash
 
-SCRIPT_VERSION="3.4-7"
+SCRIPT_VERSION="3.4-8"
 
 TREE=${HOME}/.local/share/awl
 PROGRAM=${TREE}/bin
-TMP=${TREE}/tmp
-PREFIX=${TREE}/pfx
 PREFIX_UMU=${TREE}/pfx_umu
-UMU_LOCATION=${TREE}/umu
+UMU_LOCATION=${TREE}/proton-umu
+
 FLATPAK_LOCALFILES=${HOME}/.var/app
 DOLPHIN_LOCATION=${FLATPAK_LOCALFILES}/org.DolphinEmu.dolphin-emu
 PLAY_LOCATION=${FLATPAK_LOCALFILES}/org.purei.Play
 
 function runGameTekno(){
 	while true; do
+		clear
 		if [[ ! $(cat /etc/locale.gen | grep en_US.UTF-8 | tr -d '#') ]]; then
 			printf "\e[1;93mWARNING:\e[0m You do NOT have en_US defined in your locale.gen, which may break some Lua games. Do you still wish to continue? "
 			read -p "[Y/n] " userLocaleInput
@@ -35,11 +35,7 @@ function runGameTekno(){
 	export LC_ALL=en_US.UTF-8
     export LC_NUMERIC=en_US.UTF-8
 	export LANG=en_US.UTF-8
-   	if [[ $RUNNER == "wine" ]]; then
-	       	WINEPREFIX=$PREFIX wine $PROGRAM/TeknoParrotUi.exe
-	elif [[ $RUNNER == "umu" ]]; then
-	       	GAMEID=0 PROTONPATH="$UMU_LOCATION" WINEPREFIX=$PREFIX_UMU umu-run $PROGRAM/TeknoParrotUi.exe
-  	fi
+	GAMEID=0 PROTONPATH="$UMU_LOCATION" WINEPREFIX=$PREFIX_UMU umu-run $PROGRAM/TeknoParrotUi.exe
 }
 
 function runGameTriforce(){
@@ -86,51 +82,28 @@ function runGameNamcoSys(){
 	done
 }
 
-case $1 in
-    "--version")
-    	printf "awl-\e[1m$SCRIPT_VERSION\e[0m\n"
-    ;;
-    "--dir")
-        xdg-open "$HOME/.local/share/awl" &>> /dev/null
-        printf "If nothing happens, go to: \e[1m$HOME/.local/share/awl\e[0m\n"
-    ;;
-    "--update")
-    	(
-		cd "$TREE"
-		[[ ! $(command -v wget) ]] && printf "\e[1;91mERROR:\e[0m wget not found.\n" && exit
-		rm -f "$TREE"/{awl,game-list}
-		wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/awl 
-		wget -c https://raw.githubusercontent.com/sakaki91/Arcade.Wrapper-Linux/refs/heads/main/src/game-list
-		chmod +x "$TREE"/{awl,game-list}
-	)
-    ;;
-    "--game-list")
-        "$TREE"/game-list
-    ;;
-    "--ns")
-        runGameNamcoSys
-    ;;
-    "--triforce")
-    	runGameTriforce	    
-    ;;
-    "--tekno")
-        RUNNER=wine
-        runGameTekno
-    ;;
-    "--tekno-umu")
-        RUNNER=umu
-        runGameTekno
-    ;;
-    *)
-        printf "\n\e[1msystem:\e[0m\n"
-		printf "\e[1m%-15s\e[0m %0s\n" "--version" "Show the awl version."
-        printf "\e[1m%-15s\e[0m %0s\n" "--dir" "Opens the local awl files."
-		printf "\e[1m%-15s\e[0m %0s\n\n" "--update" "Update the awl and game-list binaries only."
-		printf "\e[1mwrapper:\e[0m\n"
-        printf "\e[1m%-15s\e[0m %0s\n" "--game-list" "Shows the compatibility list."
-        printf "\e[1m%-15s\e[0m %0s\n" "--ns" "Opens the emulator compatible with Namco System [147/246]."
-        printf "\e[1m%-15s\e[0m %0s\n" "--triforce" "Opens the emulator compatible with Sega Triforce."
-        printf "\e[1m%-15s\e[0m %0s\n" "--tekno" "Opens the wine-wrapper compatible with TeknoParrot."
-        printf "\e[1m%-15s\e[0m %0s\n\n" "--tekno-umu" "Opens the umu-wrapper compatible with TeknoParrot."
-    ;;
-esac
+clear
+while true; do
+	printf "awl-$SCRIPT_VERSION > " && read -p "" mainInput
+	[[ $mainInput == "exit" ]] && printf "\e[0;92mEXIT_SUCCESS\e[0m\n" && exit
+	if [[ -z $mainInput ]]; then
+		:
+	elif [[ $mainInput == "clear" ]]; then
+		clear
+	elif [[ $mainInput == "list" ]]; then
+		[[ ! -f "$PROGRAM"/TeknoParrotUi.exe ]] && _teknoinstalled="\e[0;91m[NOT INSTALLED].\e[0m"
+		[[ ! $(flatpak list | grep Dolphin) ]] && _dolphininstalled="\e[0;91m[NOT INSTALLED].\e[0m"
+		[[ ! $(flatpak list | grep Play) ]] && _playinstalled="\e[0;91m[NOT INSTALLED].\e[0m"
+		printf "%-15s %0s $_teknoinstalled%0s\n" "tekno" "TeknoParrot (via UMU-Proton)" ""
+		printf "%-15s %0s $_dolphininstalled%0s\e[0m\n" "triforce" "Sega Triforce (Dolphin via Flatpak)" ""
+		printf "%-15s %0s $_playinstalled%0s\e[0m\n" "namcosys" "Namco System 147/246 (Play! via Flatpak)" ""
+	elif [[ $mainInput == "tekno" ]]; then
+		runGameTekno
+	elif [[ $mainInput == "triforce" ]]; then
+		runGameTriforce
+	elif [[ $mainInput == "namcosys" ]]; then
+		runGameNamcoSys
+	else
+		printf "\e[0;91mERROR:\e[0m Invalid option.\n"
+	fi
+done
